@@ -6,6 +6,7 @@ defmodule MailgunEx.Mixfile do
 
   @deps [
     { :ex_doc,  "> 0.0.0", only: [ :dev, :test ] },
+    { :httpoison, "~> 0.13.0" },
   ]
 
   # ------------------------------------------------------------
