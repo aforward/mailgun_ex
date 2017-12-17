@@ -1,0 +1,80 @@
+{
+  "items": [
+    {
+      "created_at": "Wed, 27 Jan 2016 20:25:31 GMT",
+      "id": "56a927bb803267c47ef92085",
+      "name": "adfewasfdagafdasfdafdf.com",
+      "require_tls": false,
+      "skip_verification": false,
+      "smtp_login": "postmaster@adfewasfdagafdasfdafdf.com",
+      "smtp_password": "GRtwjcqwvrQXQPOvd21W2G8MJr23b7BAMQuLT51P2oRkrBfnhQgmPWblu49TFIAG",
+      "spam_action": "disabled",
+      "state": "unverified",
+      "type": "custom",
+      "web_prefix": "email",
+      "web_scheme": "http",
+      "wildcard": false
+    },
+    {
+      "created_at": "Tue, 14 Jul 2015 19:13:04 GMT",
+      "id": "55a55f40803267158aa113e8",
+      "name": "samples.mailgun.org",
+      "require_tls": false,
+      "skip_verification": false,
+      "smtp_login": "postmaster@samples.mailgun.org",
+      "smtp_password": "9ujQvSEPuRF3Ey7S",
+      "spam_action": "disabled",
+      "state": "active",
+      "type": "sandbox",
+      "web_prefix": "email",
+      "web_scheme": "http",
+      "wildcard": false
+    },
+    {
+      "created_at": "Fri, 08 Aug 2014 10:30:25 GMT",
+      "id": "53e4a6c1f3b9c4299e209ed4",
+      "name": "test123mailgunnewdomain.mailgun.org",
+      "require_tls": false,
+      "skip_verification": false,
+      "smtp_login": "postmaster@test123mailgunnewdomain.mailgun.org",
+      "smtp_password": "supersecretpassword1",
+      "spam_action": "disabled",
+      "state": "active",
+      "type": "sandbox",
+      "web_prefix": "email",
+      "web_scheme": "http",
+      "wildcard": false
+    },
+    {
+      "created_at": "Tue, 26 Nov 2013 21:33:01 GMT",
+      "id": "5295138d4fda9e7da0f72855",
+      "name": "samplolas.mailgun.org",
+      "require_tls": false,
+      "skip_verification": false,
+      "smtp_login": "postmaster@samplolas.mailgun.org",
+      "smtp_password": "775dmfde03p5",
+      "spam_action": "disabled",
+      "state": "active",
+      "type": "sandbox",
+      "web_prefix": "email",
+      "web_scheme": "http",
+      "wildcard": false
+    },
+    {
+      "created_at": "Fri, 22 Nov 2013 18:42:33 GMT",
+      "id": "528fa5994fda9e7da20b451a",
+      "name": "thisisatestdomainformailgun.com",
+      "require_tls": false,
+      "skip_verification": false,
+      "smtp_login": "postmaster@thisisatestdomainformailgun.com",
+      "smtp_password": "246s19qn3cu0",
+      "spam_action": "disabled",
+      "state": "unverified",
+      "type": "custom",
+      "web_prefix": "email",
+      "web_scheme": "http",
+      "wildcard": false
+    }
+  ],
+  "total_count": 5
+}
