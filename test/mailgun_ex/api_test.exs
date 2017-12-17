@@ -2,6 +2,11 @@ defmodule MailgunEx.ApiTest do
   use ExUnit.Case
   alias MailgunEx.Api
 
+  setup do
+    bypass = Bypass.open
+    {:ok, bypass: bypass}
+  end
+
   test "Make an invalid call to the Mailgun API" do
     {err, reason} = Api.request(:get, resource: "domains", base: "qtts://nowhere.local")
     assert :error == err
@@ -17,4 +22,13 @@ defmodule MailgunEx.ApiTest do
     assert 200 == ok
   end
 
+  test "/domains", %{bypass: bypass} do
+    Bypass.expect_once bypass, "GET", "/domains", fn conn ->
+      Plug.Conn.resp(conn, 200, ~s<xxx>)
+    end
+    {ok, _data} = Api.request(:get,
+                    base: "http://localhost:#{bypass.port}",
+                    resource: "domains")
+    assert 200 == ok
+  end
 end
