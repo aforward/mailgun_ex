@@ -1,6 +1,6 @@
 defmodule MailgunEx.ApiTest do
   use ExUnit.Case
-  alias MailgunEx.Api
+  alias MailgunEx.{Api, BypassApi}
 
   setup do
     bypass = Bypass.open
@@ -25,9 +25,7 @@ defmodule MailgunEx.ApiTest do
   end
 
   test "/domains", %{bypass: bypass} do
-    Bypass.expect_once bypass, "GET", "/domains", fn conn ->
-      Plug.Conn.resp(conn, 200, File.read!("./test/fixtures/domains.json"))
-    end
+    BypassApi.request(bypass, "GET", "/domains", 200, "domains.json")
     {ok, _data} = Api.request(:get,
                     base: "http://localhost:#{bypass.port}",
                     resource: "domains")
