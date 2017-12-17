@@ -98,7 +98,7 @@ defmodule MailgunEx.Api do
     )
     |> (fn
          {:ok, %{status_code: status, body: body}} -> {status, body}
-         {:error, reason} -> {:error, reason}
+         {:error, %{reason: reason}} -> {:error, reason}
         end).()
   end
 
