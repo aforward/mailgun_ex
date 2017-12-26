@@ -154,7 +154,7 @@ defmodule MailgunEx.Api do
   def decode({ok, "", _}), do: {ok, ""}
   def decode({ok, body, "application/json"}) when is_binary(body) do
     body
-    |> Poison.decode(keys: :atoms)
+    |> Jason.decode(keys: :atoms)
     |> case do
          {:ok, parsed} -> {ok, parsed}
          _ -> {:error, body}
