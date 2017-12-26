@@ -86,20 +86,91 @@ defmodule MailgunEx.Api do
   def request(method, opts \\ []) do
     HTTPoison.request(
       method,
-      MailgunEx.Api.url(opts),
-      opts[:body] || "",
-      [
-        {
-          "Authorization",
-          "Basic #{Base.encode64("api:#{opts[:api_key] || @test_apikey}")}"
-        }
-      ],
-      opts |> Keyword.drop([:base, :domain, :resource, :body, :api_key])
+      opts |> MailgunEx.Api.url,
+      opts |> http_body,
+      opts |> http_headers,
+      opts |> http_opts
     )
-    |> (fn
-         {:ok, %{status_code: status, body: body}} -> {status, body}
-         {:error, %{reason: reason}} -> {:error, reason}
-        end).()
+    |> case do
+        {:ok, %{body: raw_body, status_code: code, headers: headers}} ->
+          {code, raw_body, headers}
+        {:error, %{reason: reason}} -> {:error, reason, []}
+       end
+    |> content_type
+    |> decode
   end
+
+  @doc"""
+  Extract the content type of the headers
+
+  ## Examples
+
+      iex> MailgunEx.Api.content_type({:ok, "<xml />", [{"Server", "GitHub.com"}, {"Content-Type", "application/xml; charset=utf-8"}]})
+      {:ok, "<xml />", "application/xml"}
+
+      iex> MailgunEx.Api.content_type([])
+      "application/json"
+
+      iex> MailgunEx.Api.content_type([{"Content-Type", "plain/text"}])
+      "plain/text"
+
+      iex> MailgunEx.Api.content_type([{"Content-Type", "application/xml; charset=utf-8"}])
+      "application/xml"
+
+      iex> MailgunEx.Api.content_type([{"Server", "GitHub.com"}, {"Content-Type", "application/xml; charset=utf-8"}])
+      "application/xml"
+  """
+  def content_type({ok, body, headers}), do: {ok, body, content_type(headers)}
+  def content_type([]), do: "application/json"
+  def content_type([{ "Content-Type", val } | _]), do: val |> String.split(";") |> List.first
+  def content_type([_ | t]), do: t |> content_type
+
+
+  @doc"""
+  Decode the response body
+
+  ## Examples
+
+      iex> MailgunEx.Api.decode({:ok, "{\\\"a\\\": 1}", "application/json"})
+      {:ok, %{a: 1}}
+
+      iex> MailgunEx.Api.decode({500, "", "application/json"})
+      {500, ""}
+
+      iex> MailgunEx.Api.decode({:error, "{\\\"a\\\": 1}", "application/json"})
+      {:error, %{a: 1}}
+
+      iex> MailgunEx.Api.decode({:ok, "{goop}", "application/json"})
+      {:error, "{goop}"}
+
+      iex> MailgunEx.Api.decode({:error, "{goop}", "application/json"})
+      {:error, "{goop}"}
+
+      iex> MailgunEx.Api.decode({:error, :nxdomain, "application/dontcare"})
+      {:error, :nxdomain}
+
+  """
+  def decode({ok, body, _}) when is_atom(body), do: {ok, body}
+  def decode({ok, "", _}), do: {ok, ""}
+  def decode({ok, body, "application/json"}) when is_binary(body) do
+    body
+    |> Poison.decode(keys: :atoms)
+    |> case do
+         {:ok, parsed} -> {ok, parsed}
+         _ -> {:error, body}
+       end
+  end
+  def decode({ok, body, _}), do: {ok, body}
+
+  defp http_headers(opts) do
+    [
+      {
+        "Authorization",
+        "Basic #{Base.encode64("api:#{opts[:api_key] || @test_apikey}")}"
+      }
+    ]
+  end
+  defp http_body(opts), do: opts[:body] || ""
+  defp http_opts(opts), do: opts |> Keyword.drop([:base, :domain, :resource, :body, :api_key])
 
 end

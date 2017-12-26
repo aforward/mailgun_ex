@@ -26,9 +26,13 @@ defmodule MailgunEx.ApiTest do
 
   test "/domains", %{bypass: bypass} do
     BypassApi.request(bypass, "GET", "/domains", 200, "domains.json")
-    {ok, _data} = Api.request(:get,
+    {ok, data} = Api.request(:get,
                     base: "http://localhost:#{bypass.port}",
                     resource: "domains")
     assert 200 == ok
+
+    assert is_map(data)
+    assert 5 == data[:total_count]
+    assert 5 == data[:items] |> Enum.count
   end
 end
