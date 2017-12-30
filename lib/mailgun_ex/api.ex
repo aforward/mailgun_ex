@@ -18,6 +18,9 @@ defmodule MailgunEx.Api do
     * `:domain`  - The domain making the request (e.g. namedb.org)
     * `:resource` - The requested resource (e.g. /domains)
 
+  The options above can be defaulted using `Mix.Config` configurations,
+  please refer to `MailgunEx` for more details on configuring this library.
+
   This function returns a fully qualified URL as a string.
 
   ## Example
@@ -45,11 +48,15 @@ defmodule MailgunEx.Api do
 
   """
   def url(opts \\ []) do
-    [
-      Keyword.get(opts, :base, @base_url),
-      Keyword.get(opts, :domain),
-      Keyword.get(opts, :resource, []),
-    ]
+    opts
+    |> merge_opts(env_opts(), [:base, :domain, :resource])
+    |> (fn all_opts ->
+          [
+            Keyword.get(all_opts, :base, @base_url),
+            Keyword.get(all_opts, :domain),
+            Keyword.get(all_opts, :resource, []),
+          ]
+        end).()
     |> List.flatten
     |> Enum.reject(&is_nil/1)
     |> Enum.join("/")
@@ -74,6 +81,9 @@ defmodule MailgunEx.Api do
 
   Header `opts` (to send meta-data along with the request)
     * `:api_key` - Defaults to the test API key `key-3ax6xnjp29jd6fds4gc373sgvjxteol0`
+
+  The options above can be defaulted using `Mix.Config` configurations,
+  please refer to `MailgunEx` for more details on configuring this library.
 
   This function returns `{<status_code>, response}` if the request is successful, and
   `{:error, reason}` otherwise.
@@ -162,15 +172,68 @@ defmodule MailgunEx.Api do
   end
   def decode({ok, body, _}), do: {ok, body}
 
-  defp http_headers(opts) do
-    [
-      {
-        "Authorization",
-        "Basic #{Base.encode64("api:#{opts[:api_key] || @test_apikey}")}"
-      }
-    ]
+  @doc"""
+  Merge the provided options, with the default ones based on the
+  expected keys.  This will be used in for all `opts` below to
+  provide sensible defaults if they are configured.
+
+  Please refer to `MailgunEx` for more details on configuring this library.
+
+  ## Example
+
+      iex> MailgunEx.Api.merge_opts([b: "oranges"], [a: 1, b: "apples", c: 3])
+      [a: 1, c: 3, b: "oranges"]
+
+      iex> MailgunEx.Api.merge_opts([b: "oranges"], [a: 1, b: "apples", c: 3], [:a, :b])
+      [a: 1, b: "oranges"]
+
+      iex> MailgunEx.Api.merge_opts([b: nil], [b: "apples"])
+      [b: nil]
+
+      iex> MailgunEx.Api.merge_opts([b: "oranges"], nil)
+      [b: "oranges"]
+  """
+  def merge_opts(provided_opts, configured_opts), do: merge_opts(provided_opts, configured_opts, nil)
+  def merge_opts(provided_opts, nil, _), do: provided_opts
+  def merge_opts(provided_opts, configured_opts, expected_keys) do
+    case expected_keys do
+      nil -> configured_opts
+      k -> configured_opts |> Keyword.take(k)
+    end
+    |> Keyword.merge(provided_opts)
   end
+
+  @doc false
+  def http_headers(opts \\ []) do
+    opts
+    |> merge_opts(env_opts(), [:api_key])
+    |> Keyword.get(:api_key, @test_apikey)
+    |> (fn api_key ->
+          [
+            {
+              "Authorization",
+              "Basic #{Base.encode64("api:#{api_key}")}"
+            }
+          ]
+        end).()
+  end
+
+  @doc false
+  def env_opts, do: Application.get_all_env(:mailgun_ex)
+
+  @doc false
+  def env_opts(key), do: Application.get_env(:mailgun_ex, key)
+
+
+  @doc false
+  def http_opts(opts \\ []) do
+    opts
+    |> Keyword.drop([:base, :domain, :resource, :body, :api_key])
+    |> merge_opts(env_opts(:http_opts))
+  end
+
   defp http_body(opts), do: opts[:body] || ""
-  defp http_opts(opts), do: opts |> Keyword.drop([:base, :domain, :resource, :body, :api_key])
+
+
 
 end
