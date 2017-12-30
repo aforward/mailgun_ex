@@ -11,6 +11,11 @@ defmodule MailgunEx.Mixfile do
     { :bypass, "~> 0.8", only: [ :dev, :test ] },
   ]
 
+  @docs [
+    main: "MailgunEx",
+    extras: ["README.md"],
+  ]
+
   # Specifies which paths to compile per environment
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
@@ -24,6 +29,7 @@ defmodule MailgunEx.Mixfile do
       version: @version,
       elixir:  ">= 1.5.2",
       deps:    @deps,
+      docs:    @docs,
       build_embedded:  in_production,
       elixirc_paths: elixirc_paths(Mix.env)
     ]
