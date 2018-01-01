@@ -1,17 +1,13 @@
 defmodule MailgunEx.ApiTest do
   use ExUnit.Case
-  alias MailgunEx.{Api, BypassApi}
+  alias MailgunEx.Api
 
   setup do
-    bypass = Bypass.open
-
     on_exit fn ->
       Application.delete_env(:mailgun_ex, :base)
       Application.delete_env(:mailgun_ex, :api_key)
       Application.delete_env(:mailgun_ex, :http_opts)
     end
-
-    {:ok, bypass: bypass}
   end
 
   test "No configs, no problem" do
@@ -55,26 +51,4 @@ defmodule MailgunEx.ApiTest do
     assert :nxdomain == reason
   end
 
-  @tag :external
-  test "Make a live request to Mailgun API" do
-    {ok, data} = Api.request(
-                  :get,
-                  resource: "domains",
-                  api_key: "key-3ax6xnjp29jd6fds4gc373sgvjxteol0")
-    assert 200 == ok
-    File.mkdir_p("./test/fixtures")
-    File.write("./test/fixtures/domains.json", data)
-  end
-
-  test "/domains", %{bypass: bypass} do
-    BypassApi.request(bypass, "GET", "/domains", 200, "domains.json")
-    {ok, data} = Api.request(:get,
-                    base: "http://localhost:#{bypass.port}",
-                    resource: "domains")
-    assert 200 == ok
-
-    assert is_map(data)
-    assert 5 == data[:total_count]
-    assert 5 == data[:items] |> Enum.count
-  end
 end
