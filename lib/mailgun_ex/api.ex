@@ -7,7 +7,95 @@ defmodule MailgunEx.Api do
   @base_url "https://api.mailgun.net/v3"
   @test_apikey "key-3ax6xnjp29jd6fds4gc373sgvjxteol0"
 
-  @doc """
+  @doc"""
+  Issues an HTTP request with the given method to the given url_opts.
+
+  Args:
+    * `method` - HTTP method as an atom (`:get`, `:head`, `:post`, `:put`, `:delete`, etc.)
+    * `opts` - A keyword list of options to help create the URL, provide the body and/or query params
+
+  URL `opts` (to help create the resolved MailGun URL):
+    * `:base` - The base URL which defaults to `https://api.mailgun.net/v3`
+    * `:domain`  - The domain making the request (e.g. namedb.org)
+    * `:resource` - The requested resource (e.g. /domains)
+
+  Data `opts` (to send data along with the request)
+    * `:body` - The encoded body of the request (typically provided in JSON)
+    * `:params` - The query parameters of the request
+
+  Header `opts` (to send meta-data along with the request)
+    * `:api_key` - Defaults to the test API key `key-3ax6xnjp29jd6fds4gc373sgvjxteol0`
+
+  The options above can be defaulted using `Mix.Config` configurations,
+  please refer to `MailgunEx` for more details on configuring this library.
+
+  This function returns `{<status_code>, response}` if the request is successful, and
+  `{:error, reason}` otherwise.
+
+  ## Examples
+
+      MailgunEx.Api.request(:get, resource: "domains")
+
+  """
+  def request(method, opts \\ []) do
+    opts
+    |> prepare_request
+    |> send_request(method)
+    |> case do
+        {:ok, %{body: raw_body, status_code: code, headers: headers}} ->
+          {code, raw_body, headers}
+        {:error, %{reason: reason}} -> {:error, reason, []}
+       end
+    |> content_type
+    |> decode
+  end
+
+  @doc"""
+  Prepare an HTTP request with the given method to the given url_opts.
+
+  Args:
+    * `opts` - A keyword list of options to help create the URL, provide the body and/or query params
+
+  URL `opts` (to help create the resolved MailGun URL):
+    * `:base` - The base URL which defaults to `https://api.mailgun.net/v3`
+    * `:domain`  - The domain making the request (e.g. namedb.org)
+    * `:resource` - The requested resource (e.g. /domains)
+
+  Data `opts` (to send data along with the request)
+    * `:body` - The encoded body of the request (typically provided in JSON)
+    * `:params` - The query parameters of the request
+
+  Header `opts` (to send meta-data along with the request)
+    * `:api_key` - Defaults to the test API key `key-3ax6xnjp29jd6fds4gc373sgvjxteol0`
+
+  The options above can be defaulted using `Mix.Config` configurations,
+  please refer to `MailgunEx` for more details on configuring this library.
+
+  The function will return all necessary parts for the `&HTTPoison.request/5` call
+
+      [
+        url: <the fully qualified URL endpoint>,
+        body: <the body of the message>
+        headers: <the HTTP headers of the message>
+        http_opts: <The HTTPoison options>
+      ]
+
+  ## Examples
+
+      iex> MailgunEx.Api.prepare_request(resource: "domains") |> Keyword.get(:url)
+      "https://api.mailgun.net/v3/domains"
+
+  """
+  def prepare_request(opts \\ []) do
+    [
+      url: opts |> MailgunEx.Api.url,
+      body: opts |> http_body,
+      headers: opts |> http_headers,
+      http_opts: opts |> http_opts
+    ]
+  end
+
+  @doc"""
   The API url for your domain.
 
   Args:
@@ -62,54 +150,6 @@ defmodule MailgunEx.Api do
     |> Enum.join("/")
   end
 
-
-  @doc"""
-  Issues an HTTP request with the given method to the given url_opts.
-
-  Args:
-    * `method` - HTTP method as an atom (`:get`, `:head`, `:post`, `:put`, `:delete`, etc.)
-    * `opts` - A keyword list of options to help create the URL, provide the body and/or query params
-
-  URL `opts` (to help create the resolved MailGun URL):
-    * `:base` - The base URL which defaults to `https://api.mailgun.net/v3`
-    * `:domain`  - The domain making the request (e.g. namedb.org)
-    * `:resource` - The requested resource (e.g. /domains)
-
-  Data `opts` (to send data along with the request)
-    * `:body` - The encoded body of the request (typically provided in JSON)
-    * `:params` - The query parameters of the request
-
-  Header `opts` (to send meta-data along with the request)
-    * `:api_key` - Defaults to the test API key `key-3ax6xnjp29jd6fds4gc373sgvjxteol0`
-
-  The options above can be defaulted using `Mix.Config` configurations,
-  please refer to `MailgunEx` for more details on configuring this library.
-
-  This function returns `{<status_code>, response}` if the request is successful, and
-  `{:error, reason}` otherwise.
-
-  ## Examples
-
-      MailgunEx.Api.request(:get, resource: "domains")
-
-  """
-  def request(method, opts \\ []) do
-    HTTPoison.request(
-      method,
-      opts |> MailgunEx.Api.url,
-      opts |> http_body,
-      opts |> http_headers,
-      opts |> http_opts
-    )
-    |> case do
-        {:ok, %{body: raw_body, status_code: code, headers: headers}} ->
-          {code, raw_body, headers}
-        {:error, %{reason: reason}} -> {:error, reason, []}
-       end
-    |> content_type
-    |> decode
-  end
-
   @doc"""
   Extract the content type of the headers
 
@@ -134,7 +174,6 @@ defmodule MailgunEx.Api do
   def content_type([]), do: "application/json"
   def content_type([{ "Content-Type", val } | _]), do: val |> String.split(";") |> List.first
   def content_type([_ | t]), do: t |> content_type
-
 
   @doc"""
   Decode the response body
@@ -203,8 +242,10 @@ defmodule MailgunEx.Api do
     |> Keyword.merge(provided_opts)
   end
 
-  @doc false
-  def http_headers(opts \\ []) do
+  defp env_opts, do: Application.get_all_env(:mailgun_ex)
+  defp env_opts(key), do: Application.get_env(:mailgun_ex, key)
+
+  defp http_headers(opts \\ []) do
     opts
     |> merge_opts(env_opts(), [:api_key])
     |> Keyword.get(:api_key, @test_apikey)
@@ -218,15 +259,7 @@ defmodule MailgunEx.Api do
         end).()
   end
 
-  @doc false
-  def env_opts, do: Application.get_all_env(:mailgun_ex)
-
-  @doc false
-  def env_opts(key), do: Application.get_env(:mailgun_ex, key)
-
-
-  @doc false
-  def http_opts(opts \\ []) do
+  defp http_opts(opts \\ []) do
     opts
     |> Keyword.drop([:base, :domain, :resource, :body, :api_key])
     |> merge_opts(env_opts(:http_opts))
@@ -234,6 +267,14 @@ defmodule MailgunEx.Api do
 
   defp http_body(opts), do: opts[:body] || ""
 
-
+  defp send_request([url: url, body: http_body, headers: headers, http_opts: http_opts], method) do
+    HTTPoison.request(
+      method,
+      url,
+      http_body,
+      headers,
+      http_opts
+    )
+  end
 
 end
