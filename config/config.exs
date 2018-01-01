@@ -37,3 +37,13 @@ use Mix.Config
 #   * `:params`           - an enumerable consisting of two-item tuples that will be appended to the url as query string parameters
 #
 # If these are out of date, please push a Pull-Request to [mailgun_ex](https://github.com/work-samples/mailgun_ex)
+
+
+# To run `@tag :external` tests, you will need to provide a local
+# ./config/test.exs file, take a look at ./config/test.example.exs
+# for more details about what that needs to look like.
+if File.exists?("./config/test.exs") do
+  import_config "test.exs"
+end
+
+
