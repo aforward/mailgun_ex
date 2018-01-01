@@ -11,4 +11,11 @@ defmodule MailgunEx.SandboxApi do
     Application.delete_env(:mailgun_ex, live_key)
   end
 
+  def strip_email(json) do
+    Regex.replace(
+      ~r/<[^@]*@sandbox[^\.]*\.mailgun\.org>/,
+      json,
+      "<201801010000000.1.ABC123@sandbox123.mailgun.org>"
+    )
+  end
 end

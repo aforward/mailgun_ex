@@ -28,4 +28,28 @@ defmodule MailgunEx.ApiSandboxTest do
     File.write("./test/fixtures/domains.json", data |> Jason.encode!)
   end
 
+  @tag :external
+  test "POST /<domain>/messages" do
+    {ok, data} = Api.request(
+                   :post,
+                   resource: "messages",
+                   params: [
+                     from: Application.get_env(:mailgun_ex, :from),
+                     to: Application.get_env(:mailgun_ex, :to),
+                     subject: "Hello From Test",
+                     text: "Hello, from test.",
+                     html: "<b>Hello</b>, from test.",
+                   ])
+    assert 200 == ok
+    assert "Queued. Thank you." == data[:message]
+    assert nil != data[:id]
+    File.mkdir_p("./test/fixtures")
+    File.write(
+      "./test/fixtures/messages.json",
+      data |> Jason.encode! |> SandboxApi.strip_email
+    )
+  end
+
+
+
 end
