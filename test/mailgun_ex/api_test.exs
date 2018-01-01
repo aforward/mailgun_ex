@@ -10,10 +10,6 @@ defmodule MailgunEx.ApiTest do
     end
   end
 
-  test "No configs, no problem" do
-    assert "https://api.mailgun.net/v3/namedb.org" == Api.url(domain: "namedb.org")
-  end
-
   test "Use configs for url if opts key not provided" do
     Application.put_env(:mailgun_ex, :base, "https://mailgun.local/v4")
     assert "https://mailgun.local/v4/namedb.org" == Api.prepare_request(domain: "namedb.org") |> Keyword.get(:url)
