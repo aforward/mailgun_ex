@@ -12,14 +12,16 @@ defmodule MailgunEx.ApiBypassTest do
 
   setup do
     bypass = Bypass.open
+    Application.put_env(:mailgun_ex, :base, "http://localhost:#{bypass.port}")
+    on_exit fn ->
+      Application.delete_env(:mailgun_ex, :base)
+    end
     {:ok, bypass: bypass}
   end
 
   test "GET /domains", %{bypass: bypass} do
     BypassApi.request(bypass, "GET", "/domains", 200, "domains.json")
-    {ok, data} = Api.request(:get,
-                    base: "http://localhost:#{bypass.port}",
-                    resource: "domains")
+    {ok, data} = Api.request(:get, resource: "domains")
     assert 200 == ok
 
     assert is_map(data)
