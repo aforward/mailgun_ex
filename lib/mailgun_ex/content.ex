@@ -1,4 +1,8 @@
 defmodule MailgunEx.Content do
+  @moduledoc"""
+  Transform, decode and analyze raw encoded content based on it's type
+  (e.g. decode a raw JSON string into an Elixir map)
+  """
 
   @doc"""
   Extract the content type of the headers

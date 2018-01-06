@@ -4,5 +4,7 @@ defmodule MailgunExTest do
   doctest MailgunEx.Content
   doctest MailgunEx.Opts
   doctest MailgunEx.Url
+  doctest MailgunEx.Request
+  doctest MailgunEx.Response
 
 end

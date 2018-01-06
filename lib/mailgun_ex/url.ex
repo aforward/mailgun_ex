@@ -41,8 +41,8 @@ defmodule MailgunEx.Url do
       iex> MailgunEx.Url.generate(domain: "namedb.org", resource: "logs")
       "https://api.mailgun.net/v3/namedb.org/logs"
 
-      iex> MailgunEx.Url.generate(domain: "namedb.org", resource: "logs")
-      "https://api.mailgun.net/v3/namedb.org/logs"
+      iex> MailgunEx.Url.generate(domain: "namedb.org", resource: "tags/t1")
+      "https://api.mailgun.net/v3/namedb.org/tags/t1"
 
       iex> MailgunEx.Url.generate(domain: "namedb.org", resource: ["tags", "t1", "stats"])
       "https://api.mailgun.net/v3/namedb.org/tags/t1/stats"
