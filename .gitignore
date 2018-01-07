@@ -22,5 +22,6 @@ erl_crash.dump
 # local helper scripts not for the public repo
 /scripts
 
-# Sandbox tests contain secrets, so must not be pushed to the public repo
+# Sandbox tests, and dev contain secrets, so must not be pushed to the public repo
 /config/test.exs
+/config/dev.exs
