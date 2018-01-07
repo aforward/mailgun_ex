@@ -24,7 +24,6 @@ defmodule MailgunEx.ApiSandboxTest do
                   resource: "domains",
                   api_key: "key-3ax6xnjp29jd6fds4gc373sgvjxteol0")
     assert 200 == ok
-    File.mkdir_p("./test/fixtures")
     File.write("./test/fixtures/domains.json", data |> Jason.encode!)
   end
 
