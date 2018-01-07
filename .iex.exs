@@ -1,0 +1,1 @@
+alias MailgunEx.{Api, Request, Client}
