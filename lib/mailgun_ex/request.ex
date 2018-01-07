@@ -9,7 +9,7 @@ defmodule MailgunEx.Request do
     * `url` - Where are we sending the request
     * `body` - What is the body of the request
     * `headers` - What headers are we sending
-    * `http_opts` - All others others, such as query `:params`, and other configurations
+    * `http_opts` - All others configs, such as query `:params`
 
   """
 
