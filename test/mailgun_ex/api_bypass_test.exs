@@ -11,10 +11,9 @@ defmodule MailgunEx.ApiBypassTest do
   # to the real thing as often as possible.
 
   setup do
-    bypass = Bypass.open
-    Application.put_env(:mailgun_ex, :base, "http://localhost:#{bypass.port}")
+    bypass = BypassApi.setup
     on_exit fn ->
-      Application.delete_env(:mailgun_ex, :base)
+      BypassApi.teardown
     end
     {:ok, bypass: bypass}
   end
