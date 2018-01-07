@@ -40,32 +40,127 @@ defmodule MailgunEx.Client do
   """
 
   @doc"""
-  Send an email
+  Send an email.
 
-  Args:
-    * `to` - The recipient of the email
-    * `subject` - The subject of the email
-    * `opts` - Additional options documented below.
-
-  Opts (`opts`):
+  Options (`opts`):
+    * `:to` - The recipient of the email
+    * `:subject` - The subject of the email
     * `:from` - The sender of the email
     * `:text` - The body of the email, in TEXT
     * `:html` - The body of the email, but in HTML format
+
+  You can provide Application env defaults for the `:to` and `:from` values,
+  such as
+
+      config :mailgun_ex,
+        to: "app@namedb.org",
+        from: "app@namebd.org"
+
+  In this case, you can omit the `:from` keyword from my function call.
+  If you do provide one, then it will override the defaults above.
+
+  Conversly, if you want to route all emails to a specific inbox regardless
+  of what the function provides, then configure a `:test_to` and `:test_from`
+  Application env vales.  Such as,
+
+      config :mailgun_ex,
+        test_to: "app+TESTING@namedb.org",
+        test_from: "app+TESTING@namebd.org"
   """
-  def send_email(to, subject, opts \\ []) do
+  def send_email(opts \\ []) do
     [
       resource: "messages",
       params: [
-        from: opts[:from] || Opts.env(:from),
-        to: Opts.env(:to) || to,
-        subject: subject,
+        from: resolve(opts, :from),
+        to: resolve(opts, :to),
+        subject: opts[:subject],
         text: opts[:text],
         html: opts[:html],
       ]
     ]
-    |> (fn request_opts ->
-          Api.request(:post, request_opts)
-        end).()
+    |> send_request(:post)
+  end
+
+  @doc"""
+  Retrieve information about a mailing for `sender`.
+  """
+  def mailing_list(sender) do
+    [
+      resource: ["lists", sender],
+      domain: nil,
+    ]
+    |> send_request(:get)
+  end
+
+  @doc"""
+  Create a new mailing list
+  """
+  def new_mailing_list(sender, opts \\ []) do
+    [
+      resource: "lists",
+      domain: nil,
+      params: [
+        address: sender,
+        name: opts[:name],
+        description: opts[:description],
+        access_level: opts[:access_level],
+      ]
+    ]
+    |> send_request(:post)
+  end
+
+  @doc"""
+  Delete a mailing list
+  """
+  def delete_mailing_list(sender) do
+    [
+      resource: ["lists", sender],
+      domain: nil,
+    ]
+    |> send_request(:delete)
+  end
+
+  @doc"""
+  Add a subscriber to your mailing list
+  """
+  def add_subscriber(sender, subscriber, opts \\ []) do
+    [
+      resource: ["lists", sender, "members"],
+      domain: nil,
+      params: [
+        address: subscriber,
+        name: opts[:name],
+        vars: Jason.encode!(opts[:vars]),
+        subscribed: opts[:subscribed] || "yes",
+        upsert: opts[:upsert] || "yes",
+      ]
+    ]
+    |> send_request(:post)
+  end
+
+  @doc"""
+  Remove a subscriber from your mailing list
+  """
+  def remove_subscriber(sender, subscriber) do
+    [
+      resource: ["lists", sender, "members", subscriber],
+      domain: nil,
+    ]
+    |> send_request(:delete)
+  end
+
+  defp send_request(request_opts, method) do
+    method
+    |> Api.request(request_opts)
+    |> case do
+         {200, data} -> {:ok, data}
+         err -> err
+       end
+  end
+
+  defp resolve(opts, key) do
+    override_key = "test_#{key}" |> String.to_atom
+    Opts.env(override_key) || opts[key] || Opts.env(key)
   end
 
 end

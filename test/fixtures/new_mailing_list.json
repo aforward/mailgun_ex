@@ -1,0 +1,11 @@
+{
+    "list": {
+        "access_level": "readonly",
+        "address": "app@namedb.org",
+        "created_at": "Sun, 07 Jan 2018 02:28:07 -0000",
+        "description": "",
+        "members_count": 0,
+        "name": "Test List"
+    },
+    "message": "Mailing list has been created"
+}

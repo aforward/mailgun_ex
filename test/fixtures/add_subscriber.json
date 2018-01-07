@@ -1,0 +1,9 @@
+{
+  "member": {
+    "address": "jamesurl@namedb.org",
+    "name": "James Url",
+    "subscribed": true,
+    "vars": {}
+  },
+  "message": "Mailing list member has been created"
+}
