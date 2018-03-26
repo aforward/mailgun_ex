@@ -7,7 +7,7 @@
 
 ```elixir
 @deps [
-  mailgun_ex: "~> 0.1.0"
+  mailgun_ex: "~> 0.2.0"
 ]
 ```
 

@@ -2,7 +2,7 @@ defmodule MailgunEx.Mixfile do
   use Mix.Project
 
   @name :mailgun_ex
-  @version "0.1.0"
+  @version "0.2.0"
 
   @deps [
     {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
