@@ -70,7 +70,7 @@ This function returns `{<status_code>, response}` if the request is successful, 
 
 ```elixir
 @deps [
-  mailgun_ex: "~> 0.2.0"
+  mailgun_ex: "~> 0.2.1"
 ]
 ```
 
