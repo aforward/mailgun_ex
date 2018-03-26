@@ -120,7 +120,7 @@ defmodule MailgunEx.Request do
 
   defp http_opts(opts) do
     opts
-    |> Keyword.drop([:base, :domain, :resource, :body, :api_key])
+    |> Keyword.drop([:base, :mode, :domain, :resource, :body, :api_key])
     |> Opts.merge(:http_opts)
   end
 end
