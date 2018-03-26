@@ -54,4 +54,38 @@ defmodule MailgunEx do
   If these are out of date, please push a Pull-Request to [mailgun_ex](https://github.com/work-samples/mailgun_ex)
   """
 
+  @doc"""
+  Issues an HTTP request with the given method to the given url_opts.
+
+  Args:
+    * `method` - HTTP method as an atom (`:get`, `:head`, `:post`, `:put`, `:delete`, etc.)
+    * `opts` - A keyword list of options to help create the URL, provide the body and/or query params
+
+  The options above can be defaulted using `Mix.Config` configurations,
+  as documented above.
+
+  This function returns `{<status_code>, response}` if the request is successful, and
+  `{:error, reason}` otherwise.
+
+  ## Examples
+
+      MailgunEx.request(:get, resource: "domains")
+
+  """
+  defdelegate request(method, opts \\ []), to: MailgunEx.Api
+
+  @doc"""
+  Send an email.
+
+  Options (`opts`):
+    * `:to` - The recipient of the email
+    * `:subject` - The subject of the email
+    * `:from` - The sender of the email
+    * `:text` - The body of the email, in TEXT
+    * `:html` - The body of the email, but in HTML format
+
+  Additional client functions are available at `MailgunEx.Client`.
+  """
+  defdelegate send_email(opts \\ []), to: MailgunEx.Client
+
 end
