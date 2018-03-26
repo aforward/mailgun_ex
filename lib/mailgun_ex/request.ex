@@ -9,13 +9,14 @@ defmodule MailgunEx.Request do
     * `url` - Where are we sending the request
     * `body` - What is the body of the request
     * `headers` - What headers are we sending
+    * `mode` - We are :live, or :simulate
     * `http_opts` - All others configs, such as query `:params`
 
   """
 
-  defstruct url: nil, body: "", headers: [], http_opts: []
+  defstruct url: nil, body: "", headers: [], http_opts: [], mode: :live
 
-  alias MailgunEx.{Request, Opts, Url}
+  alias MailgunEx.{Request, Opts, Url, Simulate}
 
   @test_apikey "key-3ax6xnjp29jd6fds4gc373sgvjxteol0"
 
@@ -23,6 +24,12 @@ defmodule MailgunEx.Request do
   Build a HTTP request based on the provided options, which comprise
 
   ## Example
+
+      iex> MailgunEx.Request.create().mode
+      :live
+
+      iex> MailgunEx.Request.create(mode: :simulate).mode
+      :simulate
 
       iex> MailgunEx.Request.create(domain: "namedb.org", resource: "logs").url
       "https://api.mailgun.net/v3/namedb.org/logs"
@@ -40,6 +47,7 @@ defmodule MailgunEx.Request do
   def create(opts \\ []) do
     %Request{
       url: opts |> Url.generate(),
+      mode: opts |> mode,
       body: opts |> http_body,
       headers: opts |> http_headers,
       http_opts: opts |> http_opts
@@ -47,14 +55,42 @@ defmodule MailgunEx.Request do
   end
 
   @doc """
-  Send an HTTP request, this will use `HTTPoison` under the hood, so
+  Send an HTTP request, there are two modes of sending.  If it's mode: :live,
+  then we will use `HTTPoison` under the hood, so
   take a look at their API for additional configuration options.
 
   For example,
 
       %Request{url: "https://mailgun.local/domains"} |> Request.send(:get)
+
+  On the other hand, if it's in mode: :simulate then we will just store
+  the result (in MailgunEx.Simulate) and return the result (also from)
+  MailgunEx.Simulate.
+
+  To send a simulated request,
+
+      MailgunEx.Simulate.add_response(:x)
+      MailgunEx.Simulate.add_response({
+        200,
+        %{body: "[]", status_code: 200, headers: [{"Content-Type", "application/json"}]}
+      })
+
+      %Request{mode: :simulate, url: "https://mailgun.local/domains"}
+      |> Request.send(:get)
   """
-  def send(%Request{url: url, body: body, headers: headers, http_opts: opts}, method) do
+  def send(%Request{mode: :simulate} = request, method) do
+    Simulate.add_request(method, request)
+
+    case Simulate.pop_response() do
+      nil ->
+        raise "Missing a simulated response, make sure to add one using MailgunEx.add_response"
+
+      found ->
+        found
+    end
+  end
+
+  def send(%Request{mode: :live, url: url, body: body, headers: headers, http_opts: opts}, method) do
     HTTPoison.request(
       method,
       url,
@@ -63,6 +99,8 @@ defmodule MailgunEx.Request do
       opts
     )
   end
+
+  defp mode(opts), do: opts |> Opts.merge([:mode]) |> Keyword.get(:mode, :live)
 
   defp http_body(opts), do: opts[:body] || ""
 

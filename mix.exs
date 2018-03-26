@@ -5,10 +5,13 @@ defmodule MailgunEx.Mixfile do
   @version "0.1.0"
 
   @deps [
-    {:ex_doc, "> 0.0.0", only: [:dev, :test]},
-    {:httpoison, "~> 1.0"},
+    {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
     {:jason, "~> 1.0"},
-    {:bypass, "~> 0.8", only: [:dev, :test]}
+    {:httpoison, "~> 1.0"},
+    {:fn_expr, "~> 0.2"},
+    {:version_tasks, "~> 0.10"},
+    {:bypass, "~> 0.8", only: [:dev, :test]},
+    {:ex_doc, "> 0.0.0", only: [:dev, :test]}
   ]
 
   @docs [
@@ -38,7 +41,7 @@ defmodule MailgunEx.Mixfile do
 
   def application do
     [
-      # built-in apps that need starting
+      mod: {MailgunEx.Application, []},
       extra_applications: [
         :logger
       ]
