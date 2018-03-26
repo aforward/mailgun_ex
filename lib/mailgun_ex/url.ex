@@ -46,6 +46,9 @@ defmodule MailgunEx.Url do
       iex> MailgunEx.Url.generate(domain: "namedb.org", resource: ["tags", "t1", "stats"])
       "https://api.mailgun.net/v3/namedb.org/tags/t1/stats"
 
+      iex> MailgunEx.Url.generate(base: "https://api.mailgun.net/v4/", resource: "/stuff")
+      "https://api.mailgun.net/v4/stuff"
+
   """
   def generate(opts \\ []) do
     opts
@@ -59,6 +62,7 @@ defmodule MailgunEx.Url do
         end).()
     |> List.flatten()
     |> Enum.reject(&is_nil/1)
+    |> Enum.map(fn s -> s |> String.trim("/") end)
     |> Enum.join("/")
   end
 end
