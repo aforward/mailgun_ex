@@ -1,6 +1,5 @@
 defmodule MailgunEx do
-
-  @moduledoc"""
+  @moduledoc """
   A client API to the MailGun Email RESTful API.
 
   You can sign up for a free account at:
@@ -54,7 +53,7 @@ defmodule MailgunEx do
   If these are out of date, please push a Pull-Request to [mailgun_ex](https://github.com/work-samples/mailgun_ex)
   """
 
-  @doc"""
+  @doc """
   Issues an HTTP request with the given method to the given url_opts.
 
   Args:
@@ -74,7 +73,7 @@ defmodule MailgunEx do
   """
   defdelegate request(method, opts \\ []), to: MailgunEx.Api
 
-  @doc"""
+  @doc """
   Send an email.
 
   Options (`opts`):
@@ -87,5 +86,4 @@ defmodule MailgunEx do
   Additional client functions are available at `MailgunEx.Client`.
   """
   defdelegate send_email(opts \\ []), to: MailgunEx.Client
-
 end

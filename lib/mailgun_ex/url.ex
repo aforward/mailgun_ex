@@ -1,6 +1,5 @@
 defmodule MailgunEx.Url do
-
-  @moduledoc"""
+  @moduledoc """
   Generate the appropriate MailgunEx URL based on the sending
   domain, and the desired resource.
   """
@@ -9,7 +8,7 @@ defmodule MailgunEx.Url do
 
   alias MailgunEx.{Opts}
 
-  @doc"""
+  @doc """
   The API url for your domain, configurable using several `opts`
   (Keyword list of options).
 
@@ -55,12 +54,11 @@ defmodule MailgunEx.Url do
           [
             Keyword.get(all_opts, :base, @base_url),
             Keyword.get(all_opts, :domain),
-            Keyword.get(all_opts, :resource, []),
+            Keyword.get(all_opts, :resource, [])
           ]
         end).()
-    |> List.flatten
+    |> List.flatten()
     |> Enum.reject(&is_nil/1)
     |> Enum.join("/")
   end
-
 end

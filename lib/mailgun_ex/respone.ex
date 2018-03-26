@@ -1,5 +1,5 @@
 defmodule MailgunEx.Response do
-  @moduledoc"""
+  @moduledoc """
   Take a raw HTTPoison response and normalize it down into a 3-tuple response.
 
   For *successful* responses (i.e. we got _an_ answer back, not necessarily
@@ -26,7 +26,7 @@ defmodule MailgunEx.Response do
   a JSON like response).
   """
 
-  @doc"""
+  @doc """
   Normalize the HTTPoison response into it's usable form within this library.
 
   ## Example
@@ -45,5 +45,4 @@ defmodule MailgunEx.Response do
   def normalize({:error, %{reason: reason}}) do
     {:error, reason, []}
   end
-
 end

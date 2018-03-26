@@ -7,5 +7,4 @@ defmodule MailgunEx.ApiTest do
     assert :error == err
     assert :nxdomain == reason
   end
-
 end

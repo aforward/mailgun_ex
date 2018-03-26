@@ -1,10 +1,10 @@
 defmodule MailgunEx.Content do
-  @moduledoc"""
+  @moduledoc """
   Transform, decode and analyze raw encoded content based on it's type
   (e.g. decode a raw JSON string into an Elixir map)
   """
 
-  @doc"""
+  @doc """
   Extract the content type of the headers
 
   ## Examples
@@ -26,10 +26,10 @@ defmodule MailgunEx.Content do
   """
   def type({ok, body, headers}), do: {ok, body, type(headers)}
   def type([]), do: "application/json"
-  def type([{ "Content-Type", val } | _]), do: val |> String.split(";") |> List.first
+  def type([{"Content-Type", val} | _]), do: val |> String.split(";") |> List.first()
   def type([_ | t]), do: t |> type
 
-  @doc"""
+  @doc """
   Decode the response body
 
   ## Examples
@@ -55,14 +55,15 @@ defmodule MailgunEx.Content do
   """
   def decode({ok, body, _}) when is_atom(body), do: {ok, body}
   def decode({ok, "", _}), do: {ok, ""}
+
   def decode({ok, body, "application/json"}) when is_binary(body) do
     body
     |> Jason.decode(keys: :atoms)
     |> case do
-         {:ok, parsed} -> {ok, parsed}
-         _ -> {:error, body}
-       end
+      {:ok, parsed} -> {ok, parsed}
+      _ -> {:error, body}
+    end
   end
-  def decode({ok, body, _}), do: {ok, body}
 
+  def decode({ok, body, _}), do: {ok, body}
 end

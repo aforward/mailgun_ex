@@ -11,10 +11,12 @@ defmodule MailgunEx.ApiBypassTest do
   # to the real thing as often as possible.
 
   setup do
-    bypass = BypassApi.setup
-    on_exit fn ->
-      BypassApi.teardown
-    end
+    bypass = BypassApi.setup()
+
+    on_exit(fn ->
+      BypassApi.teardown()
+    end)
+
     {:ok, bypass: bypass}
   end
 
@@ -25,26 +27,28 @@ defmodule MailgunEx.ApiBypassTest do
 
     assert is_map(data)
     assert 5 == data[:total_count]
-    assert 5 == data[:items] |> Enum.count
+    assert 5 == data[:items] |> Enum.count()
   end
 
   test "POST /<domain>/messages", %{bypass: bypass} do
     BypassApi.request(bypass, "POST", "/myapp.local/messages", 200, "messages.json")
 
-    {ok, data} = Api.request(
-                   :post,
-                   domain: "myapp.local",
-                   resource: "messages",
-                   params: [
-                     from: "me@myapp.local",
-                     to: "me@myapp.local",
-                     subject: "Hello From Test",
-                     text: "Hello, from test.",
-                     html: "<b>Hello</b>, from test.",
-                   ])
+    {ok, data} =
+      Api.request(
+        :post,
+        domain: "myapp.local",
+        resource: "messages",
+        params: [
+          from: "me@myapp.local",
+          to: "me@myapp.local",
+          subject: "Hello From Test",
+          text: "Hello, from test.",
+          html: "<b>Hello</b>, from test."
+        ]
+      )
+
     assert 200 == ok
     assert "Queued. Thank you." == data[:message]
     assert "<201801010000000.1.ABC123@sandbox123.mailgun.org>" == data[:id]
   end
-
 end

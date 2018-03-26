@@ -1,6 +1,5 @@
 defmodule MailgunEx.Api do
-
-  @moduledoc"""
+  @moduledoc """
   Take several options, and an HTTP method and send the request to MailGun
 
   The available options are comprised of those to helper generate the MailGun
@@ -21,7 +20,7 @@ defmodule MailgunEx.Api do
 
   alias MailgunEx.{Content, Request, Response}
 
-  @doc"""
+  @doc """
   Issues an HTTP request with the given method to the given url_opts.
 
   Args:
@@ -41,11 +40,10 @@ defmodule MailgunEx.Api do
   """
   def request(method, opts \\ []) do
     opts
-    |> Request.create
+    |> Request.create()
     |> Request.send(method)
-    |> Response.normalize
-    |> Content.type
-    |> Content.decode
+    |> Response.normalize()
+    |> Content.type()
+    |> Content.decode()
   end
-
 end

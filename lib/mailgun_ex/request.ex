@@ -1,5 +1,5 @@
 defmodule MailgunEx.Request do
-  @moduledoc"""
+  @moduledoc """
   A structure to capture the request parameters to send to HTTPoision,
   this allows us to test the request without actually havig to
   send it; for ease (and speed) of testing.
@@ -19,7 +19,7 @@ defmodule MailgunEx.Request do
 
   @test_apikey "key-3ax6xnjp29jd6fds4gc373sgvjxteol0"
 
-  @doc"""
+  @doc """
   Build a HTTP request based on the provided options, which comprise
 
   ## Example
@@ -37,16 +37,16 @@ defmodule MailgunEx.Request do
       [params: [limit: 10], timeout: 1000]
 
   """
-  def create(opts  \\ []) do
+  def create(opts \\ []) do
     %Request{
-      url: opts |> Url.generate,
+      url: opts |> Url.generate(),
       body: opts |> http_body,
       headers: opts |> http_headers,
       http_opts: opts |> http_opts
     }
   end
 
-  @doc"""
+  @doc """
   Send an HTTP request, this will use `HTTPoison` under the hood, so
   take a look at their API for additional configuration options.
 
@@ -85,5 +85,4 @@ defmodule MailgunEx.Request do
     |> Keyword.drop([:base, :domain, :resource, :body, :api_key])
     |> Opts.merge(:http_opts)
   end
-
 end

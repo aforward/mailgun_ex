@@ -1,19 +1,19 @@
 defmodule MailgunEx.Mixfile do
   use Mix.Project
 
-  @name    :mailgun_ex
+  @name :mailgun_ex
   @version "0.1.0"
 
   @deps [
-    { :ex_doc,  "> 0.0.0", only: [ :dev, :test ] },
-    { :httpoison, "~> 0.13.0" },
-    { :jason, "~> 1.0.0-rc.1" },
-    { :bypass, "~> 0.8", only: [ :dev, :test ] },
+    {:ex_doc, "> 0.0.0", only: [:dev, :test]},
+    {:httpoison, "~> 1.0"},
+    {:jason, "~> 1.0"},
+    {:bypass, "~> 0.8", only: [:dev, :test]}
   ]
 
   @docs [
     main: "MailgunEx",
-    extras: ["README.md"],
+    extras: ["README.md"]
   ]
 
   # Specifies which paths to compile per environment
@@ -23,24 +23,25 @@ defmodule MailgunEx.Mixfile do
   # ------------------------------------------------------------
 
   def project do
-    in_production = Mix.env == :prod
+    in_production = Mix.env() == :prod
+
     [
-      app:     @name,
+      app: @name,
       version: @version,
-      elixir:  ">= 1.5.2",
-      deps:    @deps,
-      docs:    @docs,
-      build_embedded:  in_production,
-      elixirc_paths: elixirc_paths(Mix.env)
+      elixir: ">= 1.6.0",
+      deps: @deps,
+      docs: @docs,
+      build_embedded: in_production,
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
   def application do
     [
-      extra_applications: [         # built-in apps that need starting
+      # built-in apps that need starting
+      extra_applications: [
         :logger
-      ],
+      ]
     ]
   end
-
 end

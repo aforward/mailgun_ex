@@ -4,21 +4,25 @@ defmodule MailgunEx.ClientTest do
 
   setup do
     bypass = BypassApi.setup(domain: "namedb.org")
-    on_exit fn ->
+
+    on_exit(fn ->
       BypassApi.teardown(domain: "namedb.org")
-    end
+    end)
+
     {:ok, bypass: bypass}
   end
 
   test "Send an email", %{bypass: bypass} do
     BypassApi.request(bypass, "POST", "/namedb.org/messages", 200, "messages.json")
 
-    {ok, _} = Client.send_email(
-           from: "sender@localhost",
-           to: "receiver@localhost",
-           subject: "My subject",
-           text: "Hello World",
-           html: "<b>Hellow</b> World")
+    {ok, _} =
+      Client.send_email(
+        from: "sender@localhost",
+        to: "receiver@localhost",
+        subject: "My subject",
+        text: "Hello World",
+        html: "<b>Hellow</b> World"
+      )
 
     assert :ok == ok
   end
@@ -59,10 +63,15 @@ defmodule MailgunEx.ClientTest do
   end
 
   test "Delete a subscriber to a mailing list", %{bypass: bypass} do
-    BypassApi.request(bypass, "DELETE", "/lists/app@namedb.org/members/jamesurl@namedb.org", 200, "remove_subscriber.json")
+    BypassApi.request(
+      bypass,
+      "DELETE",
+      "/lists/app@namedb.org/members/jamesurl@namedb.org",
+      200,
+      "remove_subscriber.json"
+    )
 
     {ok, _} = Client.remove_subscriber("app@namedb.org", "jamesurl@namedb.org")
     assert :ok == ok
   end
-
 end

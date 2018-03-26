@@ -1,8 +1,7 @@
 defmodule MailgunEx.Client do
-
   alias MailgunEx.{Api, Opts}
 
-  @moduledoc"""
+  @moduledoc """
   Helper functions to access the MailGun API in a
   more succinct way.  If any features of the API are
   not directly available here, then consider using
@@ -39,7 +38,7 @@ defmodule MailgunEx.Client do
   them with `Mix.Config` to avoid using them throughout your code.
   """
 
-  @doc"""
+  @doc """
   Send an email.
 
   Options (`opts`):
@@ -75,24 +74,24 @@ defmodule MailgunEx.Client do
         to: resolve(opts, :to),
         subject: opts[:subject],
         text: opts[:text],
-        html: opts[:html],
+        html: opts[:html]
       ]
     ]
     |> send_request(:post)
   end
 
-  @doc"""
+  @doc """
   Retrieve information about a mailing for `sender`.
   """
   def mailing_list(sender) do
     [
       resource: ["lists", sender],
-      domain: nil,
+      domain: nil
     ]
     |> send_request(:get)
   end
 
-  @doc"""
+  @doc """
   Create a new mailing list
   """
   def new_mailing_list(sender, opts \\ []) do
@@ -103,24 +102,24 @@ defmodule MailgunEx.Client do
         address: sender,
         name: opts[:name],
         description: opts[:description],
-        access_level: opts[:access_level],
+        access_level: opts[:access_level]
       ]
     ]
     |> send_request(:post)
   end
 
-  @doc"""
+  @doc """
   Delete a mailing list
   """
   def delete_mailing_list(sender) do
     [
       resource: ["lists", sender],
-      domain: nil,
+      domain: nil
     ]
     |> send_request(:delete)
   end
 
-  @doc"""
+  @doc """
   Add a subscriber to your mailing list
   """
   def add_subscriber(sender, subscriber, opts \\ []) do
@@ -132,19 +131,19 @@ defmodule MailgunEx.Client do
         name: opts[:name],
         vars: Jason.encode!(opts[:vars]),
         subscribed: opts[:subscribed] || "yes",
-        upsert: opts[:upsert] || "yes",
+        upsert: opts[:upsert] || "yes"
       ]
     ]
     |> send_request(:post)
   end
 
-  @doc"""
+  @doc """
   Remove a subscriber from your mailing list
   """
   def remove_subscriber(sender, subscriber) do
     [
       resource: ["lists", sender, "members", subscriber],
-      domain: nil,
+      domain: nil
     ]
     |> send_request(:delete)
   end
@@ -153,14 +152,13 @@ defmodule MailgunEx.Client do
     method
     |> Api.request(request_opts)
     |> case do
-         {200, data} -> {:ok, data}
-         err -> err
-       end
+      {200, data} -> {:ok, data}
+      err -> err
+    end
   end
 
   defp resolve(opts, key) do
-    override_key = "test_#{key}" |> String.to_atom
+    override_key = "test_#{key}" |> String.to_atom()
     Opts.env(override_key) || opts[key] || Opts.env(key)
   end
-
 end

@@ -6,5 +6,4 @@ defmodule MailgunExTest do
   doctest MailgunEx.Url
   doctest MailgunEx.Request
   doctest MailgunEx.Response
-
 end
