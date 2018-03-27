@@ -83,7 +83,7 @@ defmodule MailgunEx.Request do
 
     case Simulate.pop_response() do
       nil ->
-        raise "Missing a simulated response, make sure to add one using MailgunEx.add_response"
+        raise "Missing a simulated response, make sure to add one using MailgunEx.Simulate.add_response"
 
       found ->
         found
