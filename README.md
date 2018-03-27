@@ -23,6 +23,21 @@ Here is an example of how to configure this library
         timeout: 5000,
       }
 
+The configs use a library called [Deferred Config](https://hex.pm/packages/deferred_config)
+so that you can use environment variables that will be loaded at runtime, versus
+compiled into the release.
+
+Here's an example of how to use the system variables
+
+    config :mailgun_ex,
+      base: "https://api.mailgun.net/v3",
+      mode: {:system, "MAILGUN_MODE", :live, {String, :to_atom}},
+      domain: {:system, "MAILGUN_DOMAIN", "defaultname.com"} ,
+      api_key: {:system, "MAILGUN_API_KEY"},
+      http_opts: %{
+        timeout: 5000,
+      }
+
 Our default `mix test` tests will use [Bypass](https://hex.pm/packages/bypass)
 as the `base` service URL so that we will not hit your production MailGun
 account during testing.

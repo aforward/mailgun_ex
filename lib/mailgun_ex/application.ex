@@ -5,6 +5,8 @@ defmodule MailgunEx.Application do
   use Application
 
   def start(_type, _args) do
+    DeferredConfig.populate(:mailgun_ex)
+
     import Supervisor.Spec, warn: false
 
     children = [

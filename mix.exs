@@ -13,6 +13,7 @@ defmodule MailgunEx.Mixfile do
     {:fn_expr, "~> 0.2"},
     {:version_tasks, "~> 0.10"},
     {:bypass, "~> 0.8", only: [:dev, :test]},
+    {:deferred_config, "~> 0.1.1"},
     {:ex_doc, "> 0.0.0", only: [:dev, :test]}
   ]
 
