@@ -11,4 +11,10 @@ defmodule MailgunEx.SimulateTest do
     Simulate.add_response({200, %{body: "a", status_code: 201, headers: [{"x", "y"}]}})
     assert Simulate.pop_response() == {200, %{body: "a", status_code: 201, headers: [{"x", "y"}]}}
   end
+
+  test "add_response, :send_email" do
+    Simulate.add_response(:send_email)
+    assert Simulate.pop_response() == {:ok, %{body: nil, headers: [], status_code: 200, id: "<acb123@simulate.mailgun.org>", message: "Queued. Thank you."}}
+  end
+
 end

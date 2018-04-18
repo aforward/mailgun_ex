@@ -14,6 +14,10 @@ defmodule MailgunEx.Simulate do
 
   def pop_request(), do: GS.call(W, {:dequeue, :request})
 
+  def add_response(:send_email) do
+    add_response({:ok, %{id: "<acb123@simulate.mailgun.org>", message: "Queued. Thank you."}})
+  end
+
   def add_response(response), do: GS.call(W, {:enqueue, :response, response})
 
   def pop_response(), do: GS.call(W, {:dequeue, :response})
