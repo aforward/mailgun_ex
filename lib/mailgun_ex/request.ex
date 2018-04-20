@@ -79,16 +79,7 @@ defmodule MailgunEx.Request do
       |> Request.send(:get)
 
   Or, if you don't care about the result just set `mode: :ignore` and
-  we will always return based on the method, as follows:
-
-    * GET     `{200, :ignored}`
-    * PUT     `{200, :ignored}`
-    * POST    `{201, :ignored}`
-    * PATCH   `{200, :ignored}`
-    * DELETE  `{200, :ignored}`
-    * *       `{200, :ignored}`
-
-
+  we will always a 200 response.
   """
   def send(%Request{mode: :simulate} = request, method) do
     Simulate.add_request(method, request)
@@ -100,10 +91,6 @@ defmodule MailgunEx.Request do
       found ->
         found
     end
-  end
-
-  def send(%Request{mode: :ignore}, :post) do
-    {:ok, %{body: "ignored", status_code: 201, headers: []}}
   end
 
   def send(%Request{mode: :ignore}, _) do
