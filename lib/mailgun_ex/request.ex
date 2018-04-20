@@ -94,7 +94,7 @@ defmodule MailgunEx.Request do
   end
 
   def send(%Request{mode: :ignore}, _) do
-    {:ok, %{body: "ignored", status_code: 200, headers: []}}
+    {:ok, %{body: "\"ignored\"", status_code: 200, headers: []}}
   end
 
   def send(%Request{mode: :live, url: url, body: body, headers: headers, http_opts: opts}, method) do
