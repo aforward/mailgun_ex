@@ -6,10 +6,10 @@ defmodule MailgunEx.Request do
 
   A `%Request{}` struct contains the following parts:
 
-    * `url` - Where are we sending the request
-    * `body` - What is the body of the request
+    * `url`     - Where are we sending the request
+    * `body`    - What is the body of the request
     * `headers` - What headers are we sending
-    * `mode` - We are :live, or :simulate
+    * `:mode`   - Defaults to `:live`, but can be set to `:simulate` for testing, or `:ignore` for dev
     * `http_opts` - All others configs, such as query `:params`
 
   """
@@ -63,7 +63,7 @@ defmodule MailgunEx.Request do
 
       %Request{url: "https://mailgun.local/domains"} |> Request.send(:get)
 
-  On the other hand, if it's in mode: :simulate then we will just store
+  On the other hand, if it's in `mode: :simulate` then we will just store
   the result (in MailgunEx.Simulate) and return the result (also from)
   MailgunEx.Simulate.
 
@@ -77,6 +77,18 @@ defmodule MailgunEx.Request do
 
       %Request{mode: :simulate, url: "https://mailgun.local/domains"}
       |> Request.send(:get)
+
+  Or, if you don't care about the result just set `mode: :ignore` and
+  we will always return based on the method, as follows:
+
+    * GET     `{200, :ignored}`
+    * PUT     `{200, :ignored}`
+    * POST    `{201, :ignored}`
+    * PATCH   `{200, :ignored}`
+    * DELETE  `{200, :ignored}`
+    * *       `{200, :ignored}`
+
+
   """
   def send(%Request{mode: :simulate} = request, method) do
     Simulate.add_request(method, request)
@@ -89,6 +101,9 @@ defmodule MailgunEx.Request do
         found
     end
   end
+
+  def send(%Request{mode: :ignore}, :post), do: {201, :ignored}
+  def send(%Request{mode: :ignore}, _), do: {200, :ignored}
 
   def send(%Request{mode: :live, url: url, body: body, headers: headers, http_opts: opts}, method) do
     HTTPoison.request(

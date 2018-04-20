@@ -7,7 +7,7 @@ defmodule MailgunEx.Api do
 
   URL `opts` (to help create the resolved MailGun URL):
     * `:base`     - The base URL which defaults to `https://api.mailgun.net/v3`
-    * `:mode`     - Defaults to `:live`, but can be set to `:simulate` for testing
+    * `:mode`     - Defaults to `:live`, but can be set to `:simulate` for testing, or `:ignore` for dev
     * `:domain`   - The domain making the request (e.g. namedb.org)
     * `:resource` - The requested resource (e.g. /domains)
 

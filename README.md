@@ -45,7 +45,7 @@ account during testing.
 Here is an outline of all the configurations you can set.
 
   * `:base`      - The base URL which defaults to `https://api.mailgun.net/v3`
-  * `:mode`      - Defaults to `:live`, but can be set to `:simulate` for testing
+  * `:mode`      - Defaults to `:live`, but can be set to `:simulate` for testing, or `:ignore` for dev
   * `:domain`    - The domain making the request (e.g. namedb.org)
   * `:api_key`   - Your mailgun API key, which looks like `key-3ax6xnjp29jd6fds4gc373sgvjxteol0`
   * `:http_opts` - A passthrough map of options to send to HTTP request, more details below
